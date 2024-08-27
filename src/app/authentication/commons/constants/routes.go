@@ -10,4 +10,5 @@ const (
 	ForgotPassword            = "auth/forgot-password"
 	ChangePassword            = "auth/change-password"
 	SignIn                    = "auth/signin"
+	GetStockById			  = "/stocks/:id"
 )

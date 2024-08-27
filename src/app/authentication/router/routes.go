@@ -44,6 +44,11 @@ func GetRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 	userDatabaseRepo := repositories.NewUserDBRepository(connectionWithDb)
 	passwordService := business.NewChangePasswordService(userDatabaseRepo)
 	changePasswordHandler := handler.NewChangePasswordController(passwordService)
+	//Dependency Injection for get stock by id 
+	stockRepository := repositories. NewStockRepository(connectionWithDb)
+	stockService := business.NewGetStockByIdService(stockRepository)
+	stockController := handler. NewGetStockByIdController(stockService)
+
 	v1Routes := router.Group(genericConstants.RouterV1Config)
 	{
 		v1Routes.GET(serviceConstant.AuthenticationHealthCheck, func(c *gin.Context) {
@@ -58,6 +63,7 @@ func GetRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		v1Routes.POST(serviceConstant.ValidateOTP, otpValidationController.HandleValidateOTP)
 		v1Routes.PATCH(serviceConstant.ChangePassword, headerCheck.AuthMiddleware(), handler.HandleChangePassword(changePasswordHandler))
 		v1Routes.POST(serviceConstant.ForgotPassword, newUsersController.HandleForgotPassword)
+		v1Routes.GET(serviceConstant.GetStockById, stockController.HandleGetStockById)
 		v1Routes.GET(serviceConstant.SwaggerRoute, ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 	return router
